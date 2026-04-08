@@ -22,6 +22,7 @@ login_manager.login_view = 'login'
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=True)
     password = db.Column(db.String(150), nullable=False)
     xp = db.Column(db.Integer, default=0)
     coins = db.Column(db.Integer, default=0)
@@ -40,15 +41,26 @@ def load_user(user_id):
 def register():
     if request.method == 'POST':
         username = request.form.get('username')
+        email = request.form.get('email')
         password = request.form.get('password')
+        password_confirm = request.form.get('password_confirm')
+
+        if password != password_confirm:
+            flash('Пароли не совпадают', 'danger')
+            return redirect(url_for('register'))
 
         user_exists = User.query.filter_by(username=username).first()
         if user_exists:
             flash('Это имя пользователя уже занято', 'danger')
             return redirect(url_for('register'))
 
+        email_exists = User.query.filter_by(email=email).first() if email else None
+        if email_exists:
+            flash('Этот email уже зарегистрирован', 'danger')
+            return redirect(url_for('register'))
+
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        new_user = User(username=username, password=hashed_password)
+        new_user = User(username=username, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 
@@ -61,17 +73,36 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form.get('username')
+        login_field = request.form.get('login_field')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter((User.username == login_field) | (User.email == login_field)).first()
 
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
             return redirect(url_for('course'))
         else:
-            flash('Неверное имя пользователя или пароль', 'danger')
+            flash('Неверный логин/почта или пароль', 'danger')
 
     return render_template('auth.html')
+
+
+@app.route('/add_email', methods=['POST'])
+@login_required
+def add_email():
+    new_email = request.form.get('email')
+    if not new_email:
+        flash('Почта не может быть пустой', 'danger')
+        return redirect(url_for('profile'))
+    
+    email_exists = User.query.filter_by(email=new_email).first()
+    if email_exists:
+        flash('Эта почта уже занята', 'danger')
+        return redirect(url_for('profile'))
+        
+    user = User.query.get(current_user.id)
+    user.email = new_email
+    db.session.commit()
+    return redirect(url_for('profile'))
 
 
 @app.route('/logout')
@@ -96,6 +127,13 @@ def course():
     return render_template('course.html', user=current_user)
 
 
+@app.route('/leaderboard')
+def leaderboard():
+    # Получаем топ 10 пользователей по XP (в порядке убывания)
+    top_users = User.query.order_by(User.xp.desc()).limit(10).all()
+    return render_template('leaderboard.html', top_users=top_users, current_user=current_user)
+
+
 @app.route('/profile')
 @login_required
 def profile():
@@ -104,7 +142,8 @@ def profile():
     else:
         completed_count = 0
 
-    total_lessons = 50
+    # Реальных уроков в courses.json ровно 47 (ID с 1 до 48, пропущен 18-й)
+    total_lessons = 47
     course_progress = int((completed_count / total_lessons) * 100)
     if course_progress > 100: course_progress = 100
 
@@ -193,6 +232,16 @@ if __name__ == '__main__':
         db.create_all()
         try:
             db.session.execute(text('ALTER TABLE user ADD COLUMN coins INTEGER DEFAULT 0'))
+            db.session.commit()
+        except:
+            db.session.rollback()
+        try:
+            db.session.execute(text('ALTER TABLE user ADD COLUMN email VARCHAR(150)'))
+            db.session.commit()
+        except:
+            db.session.rollback()
+        try:
+            db.session.execute(text('CREATE UNIQUE INDEX ix_user_email ON user (email)'))
             db.session.commit()
         except:
             db.session.rollback()

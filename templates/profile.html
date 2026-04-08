@@ -43,6 +43,28 @@
                 Уровень {{ level }} ({{ rank }})
             </span>
         </div>
+
+        {% if not user.email %}
+        <div class="alert rounded-4 p-3 mb-4" style="background: rgba(251, 191, 36, 0.1); border: 1px dashed var(--accent-gold); color: var(--text-main);">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold d-flex align-items-center gap-2"><span style="font-size: 1.2rem;">⚠️</span> <span data-i18n="no_email_title">Обезопасьте аккаунт!</span></span>
+            </div>
+            <p class="small mb-3" style="color: rgba(255,255,255,0.7);" data-i18n="no_email_desc">Привяжите почту, чтобы входить по ней и не потерять свой прогресс.</p>
+            <form action="/add_email" method="POST" class="d-flex gap-2">
+                <input type="email" name="email" class="form-control form-control-sm" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff;" placeholder="Ваш E-mail" required>
+                <button type="submit" class="btn btn-sm fw-bold px-3" style="background: var(--accent-gold); color: #000; border: none; white-space: nowrap;" data-i18n="add_email_btn">Привязать</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Сообщения об ошибках -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} rounded-4 p-2 text-center small fw-bold" style="background: rgba(255,255,255,0.1); border:none; color:var(--text-main);">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         
         <div class="text-center mb-5 mt-2">
             <div class="avatar-big mb-3">{{ user.username[0] | upper }}</div>
@@ -122,19 +144,19 @@
                 back: "К курсу", theme: "Тема оформления", lang: "Язык интерфейса", logout: "Выйти из аккаунта",
                 coins: "Монет", next_level: "До {{ level + 1 }} уровня", course_progress: "Прогресс курса",
                 lessons: "уроков", achievements: "Достижения", no_achievements: "Пока нет достижений. Пройдите первый урок!",
-                toggle: "Сменить"
+                toggle: "Сменить", no_email_title: "Обезопасьте аккаунт!", no_email_desc: "Привяжите почту, чтобы входить по ней и не потерять свой прогресс.", add_email_btn: "Привязать"
             },
             en: { 
                 back: "To Course", theme: "Theme", lang: "Language", logout: "Logout",
                 coins: "Coins", next_level: "To Level {{ level + 1 }}", course_progress: "Course Progress",
                 lessons: "lessons", achievements: "Achievements", no_achievements: "No achievements yet. Complete your first lesson!",
-                toggle: "Toggle"
+                toggle: "Toggle", no_email_title: "Secure your account!", no_email_desc: "Add your email to log in with it and protect your progress.", add_email_btn: "Link Email"
             },
             de: {
                 back: "Zum Kurs", theme: "Thema", lang: "Sprache", logout: "Abmelden",
                 coins: "Münzen", next_level: "Zu Level {{ level + 1 }}", course_progress: "Kursfortschritt",
                 lessons: "Lektionen", achievements: "Erfolge", no_achievements: "Noch keine Erfolge. Beende die erste Lektion!",
-                toggle: "Umschalten"
+                toggle: "Umschalten", no_email_title: "Konto sichern!", no_email_desc: "Fügen Sie Ihre E-Mail-Adresse hinzu, um Ihren Fortschritt zu schützen.", add_email_btn: "Verknüpfen"
             }
         };
 

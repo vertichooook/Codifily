@@ -7,78 +7,205 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #020617; --card-bg: rgba(15, 23, 42, 0.8);
-            --accent-blue: #38bdf8; --text-main: #f8fafc;
-            --input-bg: rgba(255, 255, 255, 0.05); --input-border: rgba(255, 255, 255, 0.1);
+        :root { 
+            --bg-dark: #0f172a; 
+            --card-bg: rgba(30, 41, 59, 0.7); 
+            --accent-blue: #38bdf8; 
+            --accent-glow: rgba(56, 189, 248, 0.5);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --text-main: #f8fafc;
         }
 
-        body.light-mode {
-            --bg-dark: #f1f5f9; --card-bg: rgba(255, 255, 255, 0.9);
-            --text-main: #0f172a; --input-bg: #ffffff; --input-border: #cbd5e1;
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden; /* Чтобы блюр-круги не вылазили */
         }
 
-        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; font-family: 'Inter', sans-serif; transition: 0.3s; }
+        /* Декоративные фоновые элементы */
+        .bg-circle-1 { position: absolute; top: -100px; left: -100px; width: 400px; height: 400px; background: rgba(56, 189, 248, 0.15); border-radius: 50%; filter: blur(80px); z-index: -1; }
+        .bg-circle-2 { position: absolute; bottom: -150px; right: -50px; width: 500px; height: 500px; background: rgba(129, 140, 248, 0.15); border-radius: 50%; filter: blur(100px); z-index: -1; }
 
-        .auth-card { background: var(--card-bg); padding: 50px 40px; border-radius: 24px; width: 100%; max-width: 420px; border: 1px solid var(--input-border); backdrop-filter: blur(10px); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); margin: auto; }
+        .navbar { padding: 1.5rem; position: relative; z-index: 10; }
+        .logo { font-weight: 900; font-size: 1.6rem; text-decoration: none; color: #fff; }
+        .logo span { color: var(--accent-blue); text-shadow: 0 0 15px var(--accent-glow); }
 
-        .form-control { background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-main); padding: 16px; border-radius: 12px; }
-        .form-control:focus { background: var(--input-bg); color: var(--text-main); border-color: var(--accent-blue); box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); }
-        .btn-auth { background: var(--accent-blue); color: #000; font-weight: 800; width: 100%; padding: 16px; border-radius: 12px; border: none; transition: 0.3s; }
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .auth-card { 
+            background: var(--card-bg); 
+            padding: 50px 45px; 
+            border-radius: 24px; 
+            width: 100%; 
+            max-width: 440px; 
+            border: 1px solid var(--border-color); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05); 
+        }
+
+        .form-control { 
+            background: var(--input-bg); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-main); 
+            padding: 16px 20px; 
+            border-radius: 14px; 
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        
+        .form-control::placeholder { color: #64748b; }
+        
+        .form-control:focus { 
+            background: rgba(15, 23, 42, 0.9); 
+            color: var(--text-main); 
+            border-color: var(--accent-blue); 
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15); 
+            outline: none;
+        }
+
+        .btn-auth { 
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); 
+            color: #fff; 
+            font-weight: 800; 
+            font-size: 1.05rem;
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 14px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
+            margin-top: 10px;
+        }
+
+        .btn-auth:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 15px 30px rgba(56, 189, 248, 0.4); 
+        }
 
         .form-section { display: none; }
-        .form-section.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-section.active { display: block; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); }
+        
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Стили для флэш-сообщений (уведомлений об ошибках) */
+        .flash-messages { margin-bottom: 20px; }
+        .alert-custom { 
+            background: rgba(239, 68, 68, 0.1); 
+            border: 1px solid rgba(239, 68, 68, 0.3); 
+            color: #fca5a5; 
+            border-radius: 12px; 
+            padding: 12px 16px; 
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .auth-card { padding: 35px 25px; border-radius: 20px; }
+            .auth-container { padding: 10px; }
+            h2.fw-bold { font-size: 1.6rem; }
+        }
     </style>
 </head>
 <body>
-    <nav class="p-4"><a href="/" class="text-decoration-none fw-bold fs-3" style="color: var(--text-main);">CODIFI<span style="color:var(--accent-blue)">.LY</span></a></nav>
+    <div class="bg-circle-1"></div>
+    <div class="bg-circle-2"></div>
 
-    <div class="auth-card">
-        <div id="login-section" class="form-section active">
-            <h3 class="fw-bold mb-4" data-i18n="welcome_back">С возвращением!</h3>
-            <form action="/login" method="POST">
-                <input type="text" name="username" class="form-control mb-3" placeholder="Логин" required>
-                <input type="password" name="password" class="form-control mb-4" placeholder="Пароль" required>
-                <button type="submit" class="btn-auth" data-i18n="login_btn">Войти</button>
-            </form>
-            <p class="mt-4 small opacity-75">Нет аккаунта? <a href="#" onclick="switchForm('register')" class="text-info text-decoration-none fw-bold">Создать</a></p>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">CODIFI<span>.LY</span></a>
         </div>
+    </nav>
 
-        <div id="register-section" class="form-section">
-            <h3 class="fw-bold mb-4" data-i18n="register_title">Регистрация</h3>
-            <form action="/register" method="POST">
-                <input type="text" name="username" class="form-control mb-3" placeholder="Придумайте логин" required>
-                <input type="password" name="password" class="form-control mb-4" placeholder="Пароль" required>
-                <button type="submit" class="btn-auth" data-i18n="reg_btn">Начать обучение</button>
-            </form>
-            <p class="mt-4 small opacity-75">Уже есть профиль? <a href="#" onclick="switchForm('login')" class="text-info text-decoration-none fw-bold">Войти</a></p>
+    <div class="auth-container">
+        <div class="auth-card">
+            
+            <!-- Блок для ошибок Flask -->
+            <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert-custom">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <div id="login-section" class="form-section active">
+                <h2 class="fw-bold mb-2 pb-1" data-i18n="welcome_back">С возвращением!</h2>
+                <p class="text-secondary mb-4">Войдите, чтобы продолжить обучение</p>
+                <form action="/login" method="POST">
+                    <input type="text" name="login_field" class="form-control mb-3" placeholder="Логин или почта" required>
+                    <input type="password" name="password" class="form-control mb-4" placeholder="Пароль" required>
+                    <button type="submit" class="btn-auth" data-i18n="login_btn">Войти в аккаунт</button>
+                </form>
+                <p class="mt-4 text-center text-secondary">Нет аккаунта? <a href="#" onclick="switchForm('register')" class="text-info text-decoration-none fw-bold ms-1" style="color: var(--accent-blue) !important;">Создать</a></p>
+            </div>
+
+            <div id="register-section" class="form-section">
+                <h2 class="fw-bold mb-2 pb-1" data-i18n="register_title">Регистрация</h2>
+                <p class="text-secondary mb-4">Присоединяйтесь к платформе Codifi.ly</p>
+                <form action="/register" method="POST">
+                    <input type="text" name="username" class="form-control mb-3" placeholder="Придумайте логин" required>
+                    <input type="email" name="email" class="form-control mb-3" placeholder="E-mail" required>
+                    <input type="password" name="password" class="form-control mb-3" placeholder="Пароль" required>
+                    <input type="password" name="password_confirm" class="form-control mb-4" placeholder="Повторите пароль" required>
+                    <button type="submit" class="btn-auth" data-i18n="reg_btn">Начать обучение</button>
+                </form>
+                <p class="mt-4 text-center text-secondary">Уже есть профиль? <a href="#" onclick="switchForm('login')" class="text-info text-decoration-none fw-bold ms-1" style="color: var(--accent-blue) !important;">Войти</a></p>
+            </div>
         </div>
     </div>
 
     <script>
         const translations = {
-            ru: { welcome_back: "С возвращением!", login_btn: "Войти в аккаунт", register_title: "Регистрация", reg_btn: "Начать обучение" },
-            en: { welcome_back: "Welcome Back!", login_btn: "Login", register_title: "Register", reg_btn: "Start Learning" },
-            de: { welcome_back: "Willkommen zurück!", login_btn: "Anmelden", register_title: "Registrieren", reg_btn: "Lernen starten" }
+            ru: { welcome_back: "С возвращением!", login_btn: "Войти в аккаунт", register_title: "Создать аккаунт", reg_btn: "Начать обучение" },
+            en: { welcome_back: "Welcome Back!", login_btn: "Log In", register_title: "Create Account", reg_btn: "Start Learning" },
+            de: { welcome_back: "Willkommen zurück!", login_btn: "Anmelden", register_title: "Konto erstellen", reg_btn: "Lernen starten" }
         };
 
-        function syncAppSettings() {
-            const theme = localStorage.getItem('theme') || 'dark';
+        function applyLang() {
             const lang = localStorage.getItem('lang') || 'ru';
-            document.body.className = theme === 'light' ? 'light-mode' : '';
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) el.innerText = translations[lang][key];
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
             });
         }
 
         function switchForm(target) {
             document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`${target}-section`).classList.add('active');
+            
+            // Если есть флэш-сообщения, скрываем их при переключении формы, чтобы они не мешали
+            const flashMsg = document.querySelector('.flash-messages');
+            if (flashMsg) flashMsg.style.display = 'none';
         }
 
-        document.addEventListener('DOMContentLoaded', syncAppSettings);
+        // Автоматически показываем форму регистрации, если находимся на /register
+        document.addEventListener('DOMContentLoaded', () => {
+            applyLang();
+            if (window.location.pathname === '/register') {
+                switchForm('register');
+            }
+        });
     </script>
 </body>
 </html>

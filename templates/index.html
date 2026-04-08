@@ -7,23 +7,47 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-dark: #020617; --card-bg: #0b1120; --accent-blue: #38bdf8; --footer-gray: #64748b; }
+        :root { 
+            --bg-dark: #0f172a; 
+            --card-bg: rgba(30, 41, 59, 0.7); 
+            --accent-blue: #38bdf8; 
+            --accent-glow: rgba(56, 189, 248, 0.5);
+            --footer-gray: #94a3b8; 
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
         body { background-color: var(--bg-dark); color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .navbar { padding: 1.5rem 0; }
+        
+        .navbar { padding: 1.5rem 0; z-index: 100; position: relative; }
         .logo { font-weight: 900; font-size: 1.6rem; text-decoration: none; color: #fff; }
-        .logo span { color: var(--accent-blue); }
+        .logo span { color: var(--accent-blue); text-shadow: 0 0 15px var(--accent-glow); }
 
-        .hero-section { padding: 80px 0; background: radial-gradient(circle at center, rgba(56, 189, 248, 0.07) 0%, transparent 70%); }
-        .hero-title-compact { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; }
-        .typewriter-dynamic { color: var(--accent-blue); border-right: 3px solid var(--accent-blue); animation: blink 0.8s infinite; margin-left: 8px; }
+        /* Декоративные фоновые элементы */
+        .bg-circle-1 { position: absolute; top: -100px; left: -100px; width: 400px; height: 400px; background: rgba(56, 189, 248, 0.15); border-radius: 50%; filter: blur(80px); z-index: -1; pointer-events: none; }
+        .bg-circle-2 { position: absolute; bottom: -150px; right: -50px; width: 500px; height: 500px; background: rgba(129, 140, 248, 0.15); border-radius: 50%; filter: blur(100px); z-index: -1; pointer-events: none; }
+
+        .hero-section { padding: 100px 0 80px; background: radial-gradient(circle at 50% 30%, rgba(56, 189, 248, 0.15) 0%, transparent 60%); position: relative; }
+        .hero-title-compact { font-size: clamp(2.5rem, 6vw, 4.2rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -1px; }
+        .typewriter-dynamic { color: var(--accent-blue); border-right: 3px solid var(--accent-blue); animation: blink 0.8s infinite; margin-left: 8px; text-shadow: 0 0 20px var(--accent-glow); }
         @keyframes blink { 50% { border-color: transparent; } }
 
-        .btn-main { background: var(--accent-blue); color: #000; font-weight: 700; padding: 16px 32px; border-radius: 12px; text-decoration: none; display: inline-block; transition: 0.3s; }
-        .btn-main:hover { background: #0ea5e9; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2); color: #000; }
+        .btn-main { background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: #fff; font-weight: 800; padding: 18px 40px; border-radius: 16px; text-decoration: none; display: inline-block; transition: 0.3s; font-size: 1.1rem; box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(56, 189, 248, 0.5); color: #fff; }
 
-        .feature-card { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 24px; padding: 40px; transition: 0.4s; height: 100%; }
-        .feature-card:hover { transform: translateY(-8px); border-color: rgba(56, 189, 248, 0.2); }
-        footer { padding: 60px 0 40px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        /* Глассморфизм карточки */
+        .glass-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 45px 30px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); position: relative; overflow: hidden; }
+        .glass-card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%); pointer-events: none; }
+        .glass-card:hover { transform: translateY(-10px); border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(56, 189, 248, 0.1); }
+        
+        .icon-circle { width: 64px; height: 64px; background: rgba(56, 189, 248, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 20px; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.1); }
+        
+        .section-title { font-weight: 800; font-size: 2.2rem; margin-bottom: 3rem; text-align: center; }
+        .section-title span { color: var(--accent-blue); }
+
+        /* Как это работает */
+        .step-number { font-size: 4rem; font-weight: 900; color: rgba(255,255,255,0.05); position: absolute; top: -10px; right: 20px; line-height: 1; z-index: 0; }
+        .step-content { position: relative; z-index: 1; }
+
+        footer { padding: 60px 0 40px; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 80px; }
 
         /* --- ВЫПАДАЮЩЕЕ МЕНЮ ПРОФИЛЯ --- */
         .profile-menu-container { position: relative; display: inline-block; }
@@ -33,7 +57,7 @@
         .profile-avatar { width: 36px; height: 36px; background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; margin-right: 12px; border: 2px solid var(--accent-blue); }
         .profile-name { font-weight: 700; font-size: 0.95rem; color: #fff; margin-right: 6px; }
 
-        .dropdown-menu-custom { position: absolute; top: 130%; right: 0; background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; width: 220px; padding: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); opacity: 0; transform: translateY(-15px); pointer-events: none; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; }
+        .dropdown-menu-custom { position: absolute; top: 130%; right: 0; background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; width: 220px; padding: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); opacity: 0; transform: translateY(-15px); pointer-events: none; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; }
         .dropdown-menu-custom.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
         .dropdown-item-custom { display: flex; align-items: center; padding: 14px 16px; color: #cbd5e1; text-decoration: none; font-weight: 600; border-radius: 10px; transition: 0.2s; font-size: 0.95rem; margin-bottom: 2px; }
@@ -42,17 +66,31 @@
         .dropdown-item-danger { color: #f87171; margin-top: 5px; border-top: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0 0 10px 10px; }
         .dropdown-item-danger:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; transform: translateX(5px); }
 
-        .lang-select-nav { background: transparent; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 4px 8px; margin-right: 15px; font-weight: 600; outline: none; }
-        .lang-select-nav option { background: var(--card-bg); color: #fff; }
+        .nav-link-custom { color: #cbd5e1; font-weight: 600; text-decoration: none; margin-right: 25px; transition: 0.2s; }
+        .nav-link-custom:hover { color: var(--accent-blue); }
+
+        .lang-select-nav { background: transparent; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 4px 8px; margin-right: 15px; font-weight: 600; outline: none; transition: 0.3s; }
+        .lang-select-nav:hover { border-color: var(--accent-blue); }
+        .lang-select-nav option { background: #1e293b; color: #fff; }
 
         @media (max-width: 768px) {
             .profile-name { display: none; }
             .profile-btn { padding: 6px; }
             .profile-avatar { margin-right: 0; }
+            .nav-link-custom { display: none; }
+            .hero-section { padding: 60px 0 40px; }
+            .hero-title-compact { font-size: 2.2rem; letter-spacing: 0; }
+            .glass-card { padding: 30px 20px; }
+            .step-number { font-size: 3rem; right: 10px; }
+            .section-title { font-size: 1.8rem; margin-bottom: 2rem; }
+            footer { padding: 40px 0 20px; margin-top: 40px; }
         }
     </style>
 </head>
 <body>
+    <div class="bg-circle-1"></div>
+    <div class="bg-circle-2"></div>
+    
     <nav class="navbar container d-flex justify-content-between align-items-center">
         <a href="/" class="logo">CODIFI<span>.LY</span></a>
 
@@ -73,8 +111,9 @@
 
                     <div class="dropdown-menu-custom" id="profileDropdown">
                         <a href="/course" class="dropdown-item-custom" data-i18n="my_lessons">📚 Мои уроки</a>
-                        <a href="/profile" class="dropdown-item-custom" data-i18n="profile">⚙️ Настройки (Профиль)</a>
-                        <a href="/logout" class="dropdown-item-custom dropdown-item-danger" data-i18n="logout">🚪 Выйти из аккаунта</a>
+                        <a href="/profile" class="dropdown-item-custom" data-i18n="profile">⚙️ Профиль</a>
+                        <a href="/leaderboard" class="dropdown-item-custom" data-i18n="leaderboard">🏆 Рейтинг</a>
+                        <a href="/logout" class="dropdown-item-custom dropdown-item-danger" data-i18n="logout">🚪 Выйти</a>
                     </div>
                 </div>
             {% else %}
@@ -86,56 +125,138 @@
     <header class="hero-section text-center">
         <div class="container">
             <h1 class="hero-title-compact"><span data-i18n="title">Освой искусство <br>программирования</span> <span id="typewriter" class="typewriter-dynamic"></span></h1>
-            <p class="lead text-secondary mb-5" data-i18n="subtitle">Интерактивная платформа: 50 заданий и тесты в одном месте.</p>
+            <p class="lead text-secondary mb-5" data-i18n="subtitle" style="max-width: 600px; margin: 0 auto;">Интерактивная платформа: теория, практика и геймификация в одном месте.</p>
 
             {% if current_user.is_authenticated %}
-                <a href="/course" class="btn-main" data-i18n="continue">Продолжить обучение</a>
+                <a href="/course" class="btn-main" data-i18n="continue">Продолжить обучение →</a>
             {% else %}
-                <a href="/register" class="btn-main" data-i18n="start_btn">Начать бесплатно</a>
+                <a href="/register" class="btn-main" data-i18n="start_btn">Начать бесплатно 🚀</a>
             {% endif %}
         </div>
     </header>
 
-    <section class="container py-5">
+    <section class="container py-5 mt-4">
         <div class="row g-4 text-center">
-            <div class="col-md-4"><div class="feature-card">🚀 <h4 data-i18n="f1_title">Быстрый старт</h4><p class="text-secondary small" data-i18n="f1_desc">Просто открывай браузер и пиши код.</p></div></div>
-            <div class="col-md-4"><div class="feature-card">🧠 <h4 data-i18n="f2_title">Умная практика</h4><p class="text-secondary small" data-i18n="f2_desc">Тесты после каждой темы для закрепления.</p></div></div>
-            <div class="col-md-4"><div class="feature-card">🏆 <h4 data-i18n="f3_title">Геймификация</h4><p class="text-secondary small" data-i18n="f3_desc">XP и система рангов для мотивации.</p></div></div>
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="icon-circle">⚡</div>
+                    <h4 data-i18n="f1_title" class="fw-bold mb-3">Быстрый старт</h4>
+                    <p class="text-secondary" data-i18n="f1_desc">Не нужно ничего устанавливать. Просто открывай браузер, читай теорию и пиши код прямо на сайте.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="icon-circle">🧠</div>
+                    <h4 data-i18n="f2_title" class="fw-bold mb-3">Умная практика</h4>
+                    <p class="text-secondary" data-i18n="f2_desc">Интерактивные тесты после каждой темы позволяют мгновенно закрепить новые знания.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="icon-circle">🏆</div>
+                    <h4 data-i18n="f3_title" class="fw-bold mb-3">Геймификация</h4>
+                    <p class="text-secondary" data-i18n="f3_desc">Получай очки опыта (XP), зарабатывай монеты, открывай достижения и соревнуйся в рейтинге.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container py-5 mt-5">
+        <h2 class="section-title" data-i18n="how_it_works">Как это <span>работает</span>?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4 class="fw-bold mb-2" data-i18n="hw1_title">Изучай теорию</h4>
+                        <p class="text-secondary" data-i18n="hw1_desc">Короткие и понятные уроки без лишней воды. Только то, что пригодится на практике.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4 class="fw-bold mb-2" data-i18n="hw2_title">Пиши код</h4>
+                        <p class="text-secondary" data-i18n="hw2_desc">Выполняй задания во встроенном редакторе и сразу проверяй правильность решения.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4 class="fw-bold mb-2" data-i18n="hw3_title">Побеждай</h4>
+                        <p class="text-secondary" data-i18n="hw3_desc">Получай XP за каждый пройденный урок, повышай свой уровень и попади в список лучших!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container text-center py-5 mt-5">
+        <div class="glass-card" style="padding: 60px 40px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); border-color: rgba(56,189,248,0.2);">
+            <h2 class="fw-bold mb-4" data-i18n="cta_title" style="font-size: 2.5rem;">Готов писать код?</h2>
+            <p class="text-secondary mb-4 fs-5" data-i18n="cta_desc">Присоединяйся к нам сегодня и сделай свой первый шаг в IT.</p>
+            {% if not current_user.is_authenticated %}
+                <a href="/register" class="btn-main" data-i18n="start_btn">Начать бесплатно 🚀</a>
+            {% else %}
+                <a href="/course" class="btn-main" data-i18n="continue">Продолжить обучение →</a>
+            {% endif %}
         </div>
     </section>
 
     <footer class="text-center">
-        <div class="logo opacity-50 mb-2">CODIFI<span>.LY</span></div>
+        <div class="logo opacity-50 mb-3">CODIFI<span>.LY</span></div>
+        <div class="d-flex justify-content-center gap-3 mb-3">
+            <a href="/leaderboard" class="text-secondary text-decoration-none" data-i18n="leaderboard">Рейтинг</a>
+            <a href="/course" class="text-secondary text-decoration-none" data-i18n="my_lessons">Курсы</a>
+        </div>
         <p style="color: var(--footer-gray); font-size: 0.85rem;" data-i18n="footer">© 2026 Codifi.ly. Платформа для обучения.</p>
     </footer>
 
     <script>
         const translations = {
             ru: { 
-                my_lessons: "📚 Мои уроки", profile: "⚙️ Настройки (Профиль)", logout: "🚪 Выйти из аккаунта",
-                login: "Войти", continue: "Продолжить обучение", start_btn: "Начать бесплатно",
-                title: "Освой искусство <br>программирования", subtitle: "Интерактивная платформа: 50 заданий и тесты в одном месте.",
-                f1_title: "Быстрый старт", f1_desc: "Просто открывай браузер и пиши код.",
-                f2_title: "Умная практика", f2_desc: "Тесты после каждой темы для закрепления.",
-                f3_title: "Геймификация", f3_desc: "XP и система рангов для мотивации.",
+                my_lessons: "📚 Мои уроки", profile: "⚙️ Профиль", logout: "🚪 Выйти", leaderboard: "🏆 Рейтинг",
+                login: "Войти", continue: "Продолжить обучение →", start_btn: "Начать бесплатно 🚀",
+                title: "Освой искусство <br>программирования", subtitle: "Интерактивная платформа: теория, практика и геймификация в одном месте.",
+                f1_title: "Быстрый старт", f1_desc: "Не нужно ничего устанавливать. Просто открывай браузер, читай теорию и пиши код прямо на сайте.",
+                f2_title: "Умная практика", f2_desc: "Интерактивные тесты после каждой темы позволяют мгновенно закрепить новые знания.",
+                f3_title: "Геймификация", f3_desc: "Получай очки опыта (XP), зарабатывай монеты, открывай достижения и соревнуйся в рейтинге.",
+                how_it_works: "Как это <span>работает</span>?",
+                hw1_title: "Изучай теорию", hw1_desc: "Короткие и понятные уроки без лишней воды. Только то, что пригодится на практике.",
+                hw2_title: "Пиши код", hw2_desc: "Выполняй задания во встроенном редакторе и сразу проверяй правильность решения.",
+                hw3_title: "Побеждай", hw3_desc: "Получай XP за каждый пройденный урок, повышай свой уровень и попади в список лучших!",
+                cta_title: "Готов писать код?", cta_desc: "Присоединяйся к нам сегодня и сделай свой первый шаг в IT.",
                 footer: "© 2026 Codifi.ly. Платформа для обучения."
             },
             en: { 
-                my_lessons: "📚 My Lessons", profile: "⚙️ Settings (Profile)", logout: "🚪 Logout",
-                login: "Login", continue: "Continue Learning", start_btn: "Start for Free",
-                title: "Master the Art <br>of Programming", subtitle: "Interactive platform: 50 tasks and quizzes in one place.",
-                f1_title: "Quick Start", f1_desc: "Just open your browser and start coding.",
-                f2_title: "Smart Practice", f2_desc: "Quizzes after every topic for reinforcement.",
-                f3_title: "Gamification", f3_desc: "XP and rank system for motivation.",
+                my_lessons: "📚 My Lessons", profile: "⚙️ Profile", logout: "🚪 Logout", leaderboard: "🏆 Leaderboard",
+                login: "Login", continue: "Continue Learning →", start_btn: "Start for Free 🚀",
+                title: "Master the Art <br>of Programming", subtitle: "Interactive platform: theory, practice, and gamification all in one place.",
+                f1_title: "Quick Start", f1_desc: "No installation needed. Just open your browser, read the theory, and code right on the site.",
+                f2_title: "Smart Practice", f2_desc: "Interactive quizzes after every topic help you instantly reinforce new knowledge.",
+                f3_title: "Gamification", f3_desc: "Gain experience points (XP), earn coins, unlock achievements, and compete on the leaderboard.",
+                how_it_works: "How it <span>works</span>?",
+                hw1_title: "Learn Theory", hw1_desc: "Short and clear lessons without unnecessary fluff. Only what's useful in practice.",
+                hw2_title: "Write Code", hw2_desc: "Complete tasks in the built-in editor and instantly check if your solution is correct.",
+                hw3_title: "Win", hw3_desc: "Earn XP for every completed lesson, level up, and make it to the top list!",
+                cta_title: "Ready to code?", cta_desc: "Join us today and take your first step in IT.",
                 footer: "© 2026 Codifi.ly. Learning Platform."
             },
             de: { 
-                my_lessons: "📚 Meine Lektionen", profile: "⚙️ Einstellungen (Profil)", logout: "🚪 Abmelden",
-                login: "Anmelden", continue: "Lernen fortsetzen", start_btn: "Kostenlos starten",
-                title: "Meistern Sie die Kunst <br>des Programmierens", subtitle: "Interaktive Plattform: 50 Aufgaben und Tests an einem Ort.",
-                f1_title: "Schnellstart", f1_desc: "Öffnen Sie einfach Ihren Browser und coden Sie.",
-                f2_title: "Schlaue Übung", f2_desc: "Tests nach jedem Thema zur Festigung.",
-                f3_title: "Gamification", f3_desc: "XP- und Rangsystem zur Motivation.",
+                my_lessons: "📚 Meine Lektionen", profile: "⚙️ Profil", logout: "🚪 Abmelden", leaderboard: "🏆 Bestenliste",
+                login: "Anmelden", continue: "Lernen fortsetzen →", start_btn: "Kostenlos starten 🚀",
+                title: "Meistern Sie die Kunst <br>des Programmierens", subtitle: "Interaktive Plattform: Theorie, Praxis und Gamification an einem Ort.",
+                f1_title: "Schnellstart", f1_desc: "Keine Installation nötig. Einfach Browser öffnen, Theorie lesen und direkt auf der Seite coden.",
+                f2_title: "Schlaue Übung", f2_desc: "Interaktive Tests nach jedem Thema helfen, neues Wissen sofort zu festigen.",
+                f3_title: "Gamification", f3_desc: "Sammle Erfahrungspunkte (XP), verdiene Münzen, schalte Erfolge frei und triff die Bestenliste.",
+                how_it_works: "Wie es <span>funktioniert</span>?",
+                hw1_title: "Theorie lernen", hw1_desc: "Kurze und klare Lektionen ohne unnötigen Ballast. Nur was in der Praxis nützlich ist.",
+                hw2_title: "Code schreiben", hw2_desc: "Erledigen Sie Aufgaben im integrierten Editor und überprüfen Sie sofort Ihre Lösung.",
+                hw3_title: "Gewinnen", hw3_desc: "Erhalte XP für jede Lektion, steige auf und schaffe es auf die Bestenliste!",
+                cta_title: "Bereit zu programmieren?", cta_desc: "Treten Sie uns noch heute bei und machen Sie Ihren ersten Schritt in die IT.",
                 footer: "© 2026 Codifi.ly. Lernplattform."
             }
         };
@@ -156,7 +277,6 @@
         function changeLang(val) {
             localStorage.setItem('lang', val);
             applyLang();
-            // Сбросим печатную машинку
             phrases = val === 'en' ? phrases_en : (val === 'de' ? phrases_de : phrases_ru);
             pIdx = 0; cIdx = 0; isDel = false;
         }
